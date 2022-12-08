@@ -46,7 +46,7 @@ The logging module has again a different notation:
 >>> logger.info('Starting task: %s', task_name)
 ```
 Note that this is different from the % notation in the previous section, because here we
-pass the variable as a parameter to the `logging.info` function.
+pass the variable as a parameter to the `logger.info` method.
 
 An alternative would be to use f-strings like so:
 ```python
@@ -63,7 +63,7 @@ does a kind of "lazy evaluation": it only formats the string if it acutally has 
 printed. Notice that the logging level in the example is set to `WARNING`. So the calls
 to logging.info will not produce output. The logging module realizes that and avoids
 formatting the string, if you use the first formatting style. In contrast, the f-string is
-evaluated immediately, even before it is passed to `logging.info`. Therefore, goes the
+evaluated immediately, even before it is passed to `logger.info`. Therefore, goes the
 argument, the `%s` formatting style saves you some computation time.
 
 Let's look at this in more detail.
@@ -113,7 +113,7 @@ Also, the *relative* difference between the two formatting styles is larger here
 difference is much smaller (around 100 ns, compared to 100 µs above).
 
 What can we conclude from this? First, when optimizing your application, you probably care
-more aboute absolute speed gains, which would imply a tendency to use f-strings rather
+more about absolute speed gains, which would imply a tendency to use f-strings rather
 than %s formatting. But my actual point is that these differences are so small that they
 do not have any practical relevance for the vast majority of use-cases (if you know an
 example where such differences do matter, I'd love to hear about it).
@@ -190,7 +190,7 @@ that you do not mix them with `%s` style formatting](https://bugs.python.org/iss
 (Of course, both attacks theoretically also work with f-strings.)
 
 ## So which one should I use?
-- In terms of speed: it doesn't matter! The differences are just too tiny.
+- In terms of speed: it (almost always) doesn't matter! The differences are just too tiny.
 - [Readability counts](https://peps.python.org/pep-0020/). In my opinion f-strings are the
 most readable of all methods.
 - Think about security if you let users control the format string.
@@ -213,8 +213,9 @@ log it, e.g. write it to a file, show it on a web page, or use it further in you
 When the logging module has to format a string, it internally uses the `'string' % args`
 syntax
 ([Source](https://github.com/python/cpython/blob/main/Lib/logging/__init__.py#L392)).
-This happens in a `LogRecord` class which can be subclassed in order to override this
-behavior with the formatting style of your choice.
+This happens in a `LogRecord` class [which can be
+subclassed](https://docs.python.org/3/howto/logging-cookbook.html#using-particular-formatting-styles-throughout-your-application)
+in order to override this behavior with the formatting style of your choice.
 
 However, alternatives like `string.Template` and `str.format` would have worse performance
 than %s formatting (according to Raymond Hettinger's tweet above), and f-strings cannot be
